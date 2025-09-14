@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUBHAN AUTH - Key Management Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 50%, #000000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff0000, #ffffff, #ff4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #cccccc;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Panels */
+        .panel {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(255, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 12px 40px rgba(255, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .panel-header {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ff4444;
+            border-bottom: 2px solid rgba(255, 68, 68, 0.3);
+            padding-bottom: 10px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #ff4444;
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #ff2222, #ff0000);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(100, 100, 100, 0.3);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(150, 150, 150, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #cc0000, #990000);
+            color: white;
+        }
+
+        /* Keys Table */
+        .keys-panel {
+            grid-column: 1 / -1;
+        }
+
+        .keys-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .keys-table th,
+        .keys-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .keys-table th {
+            background: rgba(255, 68, 68, 0.2);
+            font-weight: 600;
+            color: #ff4444;
+        }
+
+        .keys-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Status Badges */
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .status-expired {
+            background: rgba(255, 255, 0, 0.2);
+            color: #ffff00;
+            border: 1px solid rgba(255, 255, 0, 0.3);
+        }
+
+        .status-revoked {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ff4444;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        /* Duration Inputs */
+        .duration-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* API Endpoints Info */
+        .api-info {
+            background: rgba(10, 10, 10, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #ff4444;
+        }
+
+        .api-endpoint {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="logo">SUBHAN AUTH</h1>
+            <p class="tagline">Professional Key Management & Authentication System</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalKeys">0</div>
+                <div class="stat-label">Total Keys</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeKeys">0</div>
+                <div class="stat-label">Active Keys</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="expiredKeys">0</div>
+                <div class="stat-label">Expired Keys</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="hwidKeys">0</div>
+                <div class="stat-label">HWID Protected</div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <!-- Create Key Panel -->
+            <div class="panel">
+                <div class="panel-header">Create New Key</div>
+                <div class="form-group">
+                    <label class="form-label">Key Type</label>
+                    <select class="form-select" id="keyType">
+                        <option value="hwid">HWID Protected</option>
+                        <option value="nohwid">No HWID (All Devices)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duration</label>
+                    <div class="duration-group">
+                        <input type="number" class="form-input" id="durationValue" placeholder="Enter duration" min="1">
+                        <select class="form-select" id="durationType">
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Custom Note (Optional)</label>
+                    <input type="text" class="form-input" id="keyNote" placeholder="e.g., Customer name, purpose">
+                </div>
+                <button class="btn btn-primary" onclick="createKey()">Generate Key</button>
+            </div>
+
+            <!-- Key Management Panel -->
+            <div class="panel">
+                <div class="panel-header">Quick Actions</div>
+                <div class="form-group">
+                    <label class="form-label">Validate Key</label>
+                    <input type="text" class="form-input" id="validateKeyInput" placeholder="Enter key to validate">
+                    <button class="btn btn-secondary" onclick="validateKey()" style="margin-top: 10px; width: 100%;">Validate Key</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Revoke Key</label>
+                    <input type="text" class="form-input" id="revokeKeyInput" placeholder="Enter key to revoke">
+                    <button class="btn btn-danger" onclick="revokeKey()" style="margin-top: 10px; width: 100%;">Revoke Key</button>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-secondary" onclick="showApiInfo()" style="width: 100%;">View API Integration</button>
+                    <button class="btn btn-secondary" onclick="exportKeys()" style="width: 100%; margin-top: 10px;">Export Keys</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keys Table -->
+        <div class="panel keys-panel">
+            <div class="panel-header">All Keys</div>
+            <div style="overflow-x: auto;">
+                <table class="keys-table">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Type</th>
+                            <th>Created</th>
+                            <th>Expires</th>
+                            <th>Status</th>
+                            <th>Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keysTableBody">
+                        <!-- Keys will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- API Information Panel -->
+        <div class="api-info">
+            <h3 style="color: #ff4444; margin-bottom: 15px;">🔗 API Integration Guide</h3>
+            <p style="margin-bottom: 15px;">Use these endpoints to integrate SUBHAN AUTH with your applications:</p>
+            
+            <h4 style="color: #cccccc; margin: 15px 0 10px 0;">C# Integration Example:</h4>
+            <div class="api-endpoint">
+string apiUrl = "https://your-domain.com/api/validate";<br>
+string key = "USER_KEY_HERE";<br>
+string hwid = Environment.MachineName; // or custom HWID<br><br>
+var client = new HttpClient();<br>
+var response = await client.PostAsync(apiUrl, new StringContent(<br>
+&nbsp;&nbsp;JsonConvert.SerializeObject(new { key, hwid }),<br>
+&nbsp;&nbsp;Encoding.UTF8, "application/json"));<br><br>
+var result = await response.Content.ReadAsStringAsync();<br>
+var authResult = JsonConvert.DeserializeObject&lt;AuthResponse&gt;(result);
+                <button class="copy-btn" onclick="copyToClipboard(this.previousElementSibling.innerText)">Copy</button>
+            </div>
+
+            <h4 style="color: #cccccc; margin: 15px 0 10px 0;">Discord Bot Command:</h4>
+            <div class="api-endpoint">
+/newkey duration:30 type:days hwid:true
+                <button class="copy-btn" onclick="copyToClipboard('/newkey duration:30 type:days hwid:true')">Copy</button>
+            </div>
+
+            <h4 style="color: #cccccc; margin: 15px 0 10px 0;">API Endpoints:</h4>
+            <div class="api-endpoint">
+POST /api/validate - Validate a key<br>
+POST /api/create - Create new key (admin only)<br>
+POST /api/revoke - Revoke a key (admin only)<br>
+GET /api/stats - Get key statistics
+                <button class="copy-btn" onclick="copyToClipboard('POST /api/validate\\nPOST /api/create\\nPOST /api/revoke\\nGET /api/stats')">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying key details -->
+    <div id="keyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 style="color: #ff4444; margin-bottom: 20px;">Key Details</h2>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particles.appendChild(particle);
+            }
+        }
+
+        // Key management
+        let keys = JSON.parse(localStorage.getItem('subhan_auth_keys') || '[]');
+
+        function generateRandomKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 4; i++) {
+                if (i > 0) result += '-';
+                for (let j = 0; j < 4; j++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+            }
+            return result;
+        }
+
+        function createKey() {
+            const keyType = document.getElementById('keyType').value;
+            const durationValue = parseInt(document.getElementById('durationValue').value);
+            const durationType = document.getElementById('durationType').value;
+            const note = document.getElementById('keyNote').value;
+
+            if (!durationValue || durationValue <= 0) {
+                alert('Please enter a valid duration');
+                return;
+            }
+
+            const key = generateRandomKey();
+            const now = new Date();
+            let expiryDate = new Date(now);
+
+            // Calculate expiry date
+            switch (durationType) {
+                case 'seconds':
+                    expiryDate.setSeconds(expiryDate.getSeconds() + durationValue);
+                    break;
+                case 'minutes':
+                    expiryDate.setMinutes(expiryDate.getMinutes() + durationValue);
+                    break;
+                case 'hours':
+                    expiryDate.setHours(expiryDate.getHours() + durationValue);
+                    break;
+                case 'days':
+                    expiryDate.setDate(expiryDate.getDate() + durationValue);
+                    break;
+                case 'weeks':
+                    expiryDate.setDate(expiryDate.getDate() + (durationValue * 7));
+                    break;
+                case 'months':
+                    expiryDate.setMonth(expiryDate.getMonth() + durationValue);
+                    break;
+                case 'years':
+                    expiryDate.setFullYear(expiryDate.getFullYear() + durationValue);
+                    break;
+            }
+
+            const keyData = {
+                key: key,
+                type: keyType,
+                created: now.toISOString(),
+                expires: expiryDate.toISOString(),
+                status: 'active',
+                note: note || '',
+                hwid: null
+            };
+
+            keys.push(keyData);
+            localStorage.setItem('subhan_auth_keys', JSON.stringify(keys));
+            
+            // Reset form
+            document.getElementById('durationValue').value = '';
+            document.getElementById('keyNote').value = '';
+
+            updateUI();
+            showModal(`
+                <div style="text-align: center;">
+                    <h3 style="color: #00ff00; margin-bottom: 20px;">✅ Key Created Successfully!</h3>
+                    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h4 style="color: #cccccc; margin-bottom: 10px;">Your New Key:</h4>
+                        <div style="font-family: 'Courier New'; font-size: 1.5rem; color: #ff4444; font-weight: bold;">${key}</div>
+                        <button class="copy-btn" onclick="copyToClipboard('${key}')" style="margin-top: 10px;">Copy Key</button>
+                    </div>
+                    <p style="color: #cccccc;">Type: ${keyType.toUpperCase()}</p>
+                    <p style="color: #cccccc;">Duration: ${durationValue} ${durationType}</p>
+                    <p style="color: #cccccc;">Expires: ${expiryDate.toLocaleString()}</p>
+                </div>
+            `);
+        }
+
+        function validateKey() {
+            const keyToValidate = document.getElementById('validateKeyInput').value.trim();
+            if (!keyToValidate) {
+                alert('Please enter a key to validate');
+                return;
+            }
+
+            const keyData = keys.find(k => k.key === keyToValidate);
+            if (!keyData) {
+                showModal(`
+                    <div style="text-align: center;">
+                        <h3 style="color: #ff4444;">❌ Invalid Key</h3>
+                        <p>Key not found in database.</p>
+                    </div>
+                `);
+                return;
+            }
+
+            const now = new Date();
+            const expiry = new Date(keyData.expires);
+            const isExpired = now > expiry;
+            const status = keyData.status === 'revoked' ? 'revoked' : (isExpired ? 'expired' : 'active');
+
+            showModal(`
+                <div style="text-align: center;">
+                    <h3 style="color: ${status === 'active' ? '#00ff00' : '#ff4444'};">
+                        ${status === 'active' ? '✅' : '❌'} Key Validation Result
+                    </h3>
+                    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <p><strong>Key:</strong> ${keyData.key}</p>
+                        <p><strong>Type:</strong> ${keyData.type.toUpperCase()}</p>
+                        <p><strong>Status:</strong> <span class="status status-${status}">${status.toUpperCase()}</span></p>
+                        <p><strong>Created:</strong> ${new Date(keyData.created).toLocaleString()}</p>
+                        <p><strong>Expires:</strong> ${new Date(keyData.expires).toLocaleString()}</p>
+                        ${keyData.note ? `<p><strong>Note:</strong> ${keyData.note}</p>` : ''}
+                    </div>
+                </div>
+            `);
+
+            document.getElementById('validateKeyInput').value = '';
+        }
+
+        function revokeKey() {
+            const keyToRevoke = document.getElementById('revokeKeyInput').value.trim();
+            if (!keyToRevoke) {
+                alert('Please enter a key to revoke');
+                return;
+            }
+
+            const keyIndex = keys.findIndex(k => k.key === keyToRevoke);
+            if (keyIndex === -1) {
+                alert('Key not found');
+                return;
+            }
+
+            keys[keyIndex].status = 'revoked';
+            localStorage.setItem('subhan_auth_keys', JSON.stringify(keys));
+            
+            document.getElementById('revokeKeyInput').value = '';
+            updateUI();
+            
+            showModal(`
+                <div style="text-align: center;">
+                    <h3 style="color: #ff4444;">🚫 Key Revoked</h3>
+                    <p>Key ${keyToRevoke} has been successfully revoked.</p>
+                </div>
+            `);
+        }
+
+        function updateUI() {
+            updateStats();
+            updateKeysTable();
+        }
+
+        function updateStats() {
+            const now = new Date();
+            const activeKeys = keys.filter(k => k.status === 'active' && new Date(k.expires) > now);
+            const expiredKeys = keys.filter(k => new Date(k.expires) <= now && k.status !== 'revoked');
+            const hwidKeys = keys.filter(k => k.type === 'hwid');
+
+            document.getElementById('totalKeys').textContent = keys.length;
+            document.getElementById('activeKeys').textContent = activeKeys.length;
+            document.getElementById('expiredKeys').textContent = expiredKeys.length;
+            document.getElementById('hwidKeys').textContent = hwidKeys.length;
+        }
+
+        function updateKeysTable() {
+            const tbody = document.getElementById('keysTableBody');
+            tbody.innerHTML = '';
+
+            keys.slice().reverse().forEach(keyData => {
+                const row = document.createElement('tr');
+                const now = new Date();
+                const expiry = new Date(keyData.expires);
+                const isExpired = now > expiry;
+                const status = keyData.status === 'revoked' ? 'revoked' : (isExpired ? 'expired' : 'active');
+
+                row.innerHTML = `
+                    <td style="font-family: 'Courier New'; font-weight: bold;">${keyData.key}</td>
+                    <td>${keyData.type.toUpperCase()}</td>
+                    <td>${new Date(keyData.created).toLocaleDateString()}</td>
+                    <td>${new Date(keyData.expires).toLocaleDateString()}</td>
+                    <td><span class="status status-${status}">${status.toUpperCase()}</span></td>
+                    <td>${keyData.note || '-'}</td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;" onclick="copyToClipboard('${keyData.key}')">Copy</button>
+                        ${status !== 'revoked' ? `<button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;" onclick="quickRevoke('${keyData.key}')">Revoke</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function quickRevoke(key) {
+            const keyIndex = keys.findIndex(k => k.key === key);
+            if (keyIndex !== -1) {
+                keys[keyIndex].status = 'revoked';
+                localStorage.setItem('subhan_auth_keys', JSON.stringify(keys));
+                updateUI();
+            }
+        }
+
+        function exportKeys() {
+            const dataStr = JSON.stringify(keys, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'subhan_auth_keys.json';
+            link.click();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = 'rgba(0, 255, 0, 0.3)';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            });
+        }
+
+        function showModal(content) {
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('keyModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('keyModal').style.display = 'none';
+        }
+
+        function showApiInfo() {
+            const apiContent = `
+                <h3 style="color: #ff4444; margin-bottom: 20px;">🔗 Complete API Integration Guide</h3>
+                
+                <h4 style="color: #cccccc; margin-bottom: 10px;">C# Login Form Integration:</h4>
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 5px; margin: 10px 0; font-family: 'Courier New'; font-size: 12px; border: 1px solid rgba(255,68,68,0.3);">
+using System;<br>
+using System.Net.Http;<br>
+using System.Text;<br>
+using Newtonsoft.Json;<br><br>
+
+public class AuthResponse<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public bool Success { get; set; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public string Message { get; set; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public string KeyType { get; set; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public DateTime ExpiryDate { get; set; }<br>
+}<br><br>
+
+private async Task&lt;bool&gt; ValidateKey(string userKey)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string apiUrl = "https://your-domain.com/api/validate";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string hwid = Environment.MachineName + Environment.UserName;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var requestData = new { key = userKey, hwid = hwid };<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var json = JsonConvert.SerializeObject(requestData);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var content = new StringContent(json, Encoding.UTF8, "application/json");<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using (var client = new HttpClient())<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var response = await client.PostAsync(apiUrl, content);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var result = await response.Content.ReadAsStringAsync();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var authResult = JsonConvert.DeserializeObject&lt;AuthResponse&gt;(result);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return authResult.Success;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;catch { return false; }<br>
+}
+                    <button class="copy-btn" onclick="copyToClipboard(this.previousElementSibling.innerHTML.replace(/<br>/g, '\\n').replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, ''))">Copy C# Code</button>
+                </div>
+
+                <h4 style="color: #cccccc; margin-bottom: 10px;">C++ Integration:</h4>
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 5px; margin: 10px 0; font-family: 'Courier New'; font-size: 12px; border: 1px solid rgba(255,68,68,0.3);">
+#include &lt;curl/curl.h&gt;<br>
+#include &lt;json/json.h&gt;<br><br>
+
+bool ValidateKey(const std::string& userKey) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CURL* curl = curl_easy_init();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!curl) return false;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;std::string url = "https://your-domain.com/api/validate";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;std::string hwid = getHWID(); // Implement your HWID function<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Json::Value requestData;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;requestData["key"] = userKey;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;requestData["hwid"] = hwid;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Json::StreamWriterBuilder builder;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;std::string jsonString = Json::writeString(builder, requestData);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;curl_easy_setopt(curl, CURLOPT_URL, url.c_str());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;CURLcode res = curl_easy_perform(curl);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;curl_easy_cleanup(curl);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;return res == CURLE_OK;<br>
+}
+                    <button class="copy-btn" onclick="copyToClipboard(this.previousElementSibling.innerHTML.replace(/<br>/g, '\\n').replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, ''))">Copy C++ Code</button>
+                </div>
+
+                <h4 style="color: #cccccc; margin-bottom: 10px;">Discord Bot Commands (Node.js):</h4>
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 5px; margin: 10px 0; font-family: 'Courier New'; font-size: 12px; border: 1px solid rgba(255,68,68,0.3);">
+// Discord Bot Command Handler<br>
+client.on('interactionCreate', async interaction => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!interaction.isChatInputCommand()) return;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (interaction.commandName === 'newkey') {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Check if user is admin<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!interaction.member.permissions.has('ADMINISTRATOR')) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return interaction.reply('❌ Admin only command!');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const duration = interaction.options.getInteger('duration');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const type = interaction.options.getString('type');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const hwid = interaction.options.getBoolean('hwid');<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Call your key creation API<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const newKey = await createKeyViaAPI(duration, type, hwid);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const embed = {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: 0xff0000,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: '🔑 New Key Created',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fields: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ name: 'Key', value: `\`${newKey.key}\``, inline: true },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ name: 'Duration', value: `${duration} ${type}`, inline: true },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ name: 'Type', value: hwid ? 'HWID Protected' : 'All Devices', inline: true }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await interaction.reply({ embeds: [embed], ephemeral: true });<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+});
+                    <button class="copy-btn" onclick="copyToClipboard(this.previousElementSibling.innerHTML.replace(/<br>/g, '\\n').replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, ''))">Copy Bot Code</button>
+                </div>
+
+                <h4 style="color: #cccccc; margin-bottom: 10px;">API Endpoints Documentation:</h4>
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 5px; margin: 10px 0; font-family: 'Courier New'; font-size: 12px; border: 1px solid rgba(255,68,68,0.3);">
+<strong>POST /api/validate</strong><br>
+Body: { "key": "XXXX-XXXX-XXXX-XXXX", "hwid": "machine_id" }<br>
+Response: { "success": true/false, "message": "...", "keyType": "hwid/nohwid", "expiryDate": "..." }<br><br>
+
+<strong>POST /api/create</strong><br>
+Headers: Authorization: Bearer ADMIN_TOKEN<br>
+Body: { "duration": 30, "durationType": "days", "keyType": "hwid", "note": "..." }<br>
+Response: { "success": true, "key": "XXXX-XXXX-XXXX-XXXX", "expires": "..." }<br><br>
+
+<strong>POST /api/revoke</strong><br>
+Headers: Authorization: Bearer ADMIN_TOKEN<br>
+Body: { "key": "XXXX-XXXX-XXXX-XXXX" }<br>
+Response: { "success": true/false, "message": "..." }<br><br>
+
+<strong>GET /api/stats</strong><br>
+Headers: Authorization: Bearer ADMIN_TOKEN<br>
+Response: { "total": 100, "active": 50, "expired": 30, "revoked": 20 }
+                </div>
+
+                <h4 style="color: #cccccc; margin-bottom: 10px;">Setup Instructions:</h4>
+                <div style="background: rgba(0,50,0,0.3); padding: 15px; border-radius: 5px; margin: 10px 0; border: 1px solid rgba(0,255,0,0.3);">
+                    <p><strong>1.</strong> Deploy this panel to your web server</p>
+                    <p><strong>2.</strong> Configure your domain in the API endpoints</p>
+                    <p><strong>3.</strong> Set up SSL certificate for secure communication</p>
+                    <p><strong>4.</strong> Generate admin tokens for API access</p>
+                    <p><strong>5.</strong> Configure Discord bot with slash commands</p>
+                    <p><strong>6.</strong> Test integration with your C#/C++ projects</p>
+                </div>
+            `;
+            showModal(apiContent);
+        }
+
+        // Click outside modal to close
+        window.onclick = function(event) {
+            const modal = document.getElementById('keyModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Initialize the application
+        function init() {
+            createParticles();
+            updateUI();
+        }
+
+        // Start the application when page loads
+        document.addEventListener('DOMContentLoaded', init);
